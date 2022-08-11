@@ -1,8 +1,13 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
+//args = new[] { "--Location:City", "abc" };
+//args = new[] { "--Location__City", "abc" };
+
 
 var host = Host
     .CreateDefaultBuilder(args)
@@ -13,7 +18,7 @@ var host = Host
         configBuilder.SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
-            .AddCommandLine(args)
+            .AddBetterCommandLine(args) // just a clone of AddCommandLine
             .AddEnvironmentVariables();
     })
     .ConfigureServices((hostContext, services) =>
