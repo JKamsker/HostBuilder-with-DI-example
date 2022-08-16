@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 
 //args = new[] { "--Location:City", "abc" };
@@ -27,7 +28,25 @@ var host = Host
         services.AddTransient<LocationService>();
         services.AddTransient<EchoingService>();
     })
+    .ConfigureLogging(x =>
+    {
+        x
+            //.AddSimpleConsole(x =>
+            //{
+            //    x.SingleLine = true;
+            //    x.ColorBehavior = LoggerColorBehavior.Enabled;
+            //    x.IncludeScopes = true;
+            //}).SetMinimumLevel(LogLevel.Trace)
+            
+            .ClearProviders()
+            .AddConsoleFormatter<MyConsoleFormatter, MyConsoleFormatterOptions>()
+            .AddConsole(config => config.FormatterName = nameof(MyConsoleFormatter))
+            .SetMinimumLevel(LogLevel.Trace)
+            ;
+    })
     .Build();
+
+
 
 var service = host.Services.GetService<EchoingService>();
 
@@ -78,8 +97,19 @@ public class EchoingService
 
     public void WriteLocationToConsole()
     {
+        _logger.LogTrace("Hello world");
+        _logger.LogDebug("Hello world");
+        _logger.LogInformation("Hello world");
+        _logger.LogWarning("Hello world");
+        _logger.LogError("Hello world");
+        _logger.LogCritical("Hello world");
+
         _logger.LogInformation("Echoing address to console...");
-        Console.WriteLine(_locationService.GetAddress());
+        _logger.LogInformation(_locationService.GetAddress());
+        //Console.WriteLine(_locationService.GetAddress());
         _logger.LogInformation("Echoed address to console");
     }
 }
+
+
+
